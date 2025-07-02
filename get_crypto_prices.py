@@ -41,30 +41,26 @@ def normalize_value(price):
 
     #Разделение цены на целую часть, и часть после запятой
     split_price = price.split(",") 
-    # print(f"split_price {split_price}\n")
 
     #Целая часть
     integer_part = str(split_price[0])
-    # print(f"integer_part {integer_part}\n")
 
     #Дробная часть
     if len(split_price) == 2:
         float_part = str(split_price[1])
-        # print(f"float_part {float_part}\n")
+
     else:
         float_part = None
 
     #Разбиение целой части на элементы списка. Пример: 2450 -> ['2', '4', '5', '0']
     for char in integer_part:
         buffer.append(char)
-    # print(f'Массив = {buffer}')
         
     #Разделение на разряды в целой части цены
     buffer.reverse()
     result = list() 
     k=0
     for i in range(len(buffer)):
-        # print(f'buffer {buffer}')
         if k < 3:
             result.append(buffer[i])
             k += 1
@@ -80,7 +76,6 @@ def normalize_value(price):
     if float_part:
         normalized_price += ","
         normalized_price += float_part
-    # print(f"Результат {normalized_price}")
 
     return normalized_price
 
