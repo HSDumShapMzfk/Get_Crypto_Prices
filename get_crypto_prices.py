@@ -2,36 +2,35 @@
 
 import requests
 
-def get_response():
-    pass
+def get_response(api_url, params):
+    #Функция получает цены криптовалют от API и возвращает их в формате "ключ-значение"
 
-#---------------------------------------------------
-url = 'https://api.coingecko.com/api/v3/simple/price'
-params = {
-    'ids': 'bitcoin,ethereum,tron',
-    'vs_currencies': 'rub,usd'
-}
+    response = requests.get(api_url, params=params)
 
-response = requests.get(url, params=params)
+    if response.status_code == 200:
 
-if response.status_code == 200:
+        data = response.json()
 
-    data = response.json()
-    btc_price_usd = data['bitcoin']['usd']
-    btc_price_rub = data['bitcoin']['rub']
+        price_list = {
+            'btc_usd': data['bitcoin']['usd'],
+            'btc_rub': data['bitcoin']['rub'],
 
-    eth_price_usd = data['ethereum']['usd']
-    eth_price_rub = data['ethereum']['rub']
-    
-    trx_price_usd = data['tron']['usd']
-    trx_price_rub = data['tron']['rub']
+            'eth_usd': data['ethereum']['usd'],
+            'eth_rub': data['ethereum']['rub'],
 
-else:
-    print("Не удалось получить данные от API")
-#---------------------------------------------------
+            'trx_usd': data['tron']['usd'],
+            'trx_rub': data['tron']['rub']
+        }
+
+        return price_list
+
+    else:
+        print("Не удалось получить данные от API")
 
 def normalize_value(price):
-    #Функция добавляет запятые, разделяющие цену на разряды. Пример: 100.000,00
+    # Добавляет точки, разделяющие цену на разряды. 
+    # Заменяет точку, разделяющую дробную часть цены от целой, на запятую.
+    # Пример: 1000000.00 -> 100.000,00
 
     price = str(price)
     buffer = list()
@@ -85,8 +84,16 @@ def normalize_value(price):
 
     return normalized_price
 
-print(f"Цена BTC: \n\t${normalize_value(btc_price_usd)}\n\t₽{normalize_value(btc_price_rub)}\n")
-print(f"Цена ETH: \n\t${normalize_value(eth_price_usd)}\n\t₽{normalize_value(eth_price_rub)}\n")
-print(f"Цена TRX: \n\t${normalize_value(trx_price_usd)}\n\t₽{normalize_value(trx_price_rub)}\n")
+api_url = 'https://api.coingecko.com/api/v3/simple/price'
+params = {
+    'ids': 'bitcoin,ethereum,tron',
+    'vs_currencies': 'rub,usd'
+}
 
-# print(f"Нормализированная цена:\nЦена ETH: \n${normalize_value(eth_price_usd)}\n{normalize_value(eth_price_rub)}₽\n")
+price_list = get_response(api_url, params)
+
+print(f'list: {price_list}')
+
+print(f"Цена BTC: \n\t${normalize_value(price_list["btc_usd"])}\n\t₽{normalize_value(price_list["btc_rub"])}\n")
+print(f"Цена ETH: \n\t${normalize_value(price_list["eth_usd"])}\n\t₽{normalize_value(price_list["eth_rub"])}\n")
+print(f"Цена TRX: \n\t${normalize_value(price_list["trx_usd"])}\n\t₽{normalize_value(price_list["trx_rub"])}\n")
