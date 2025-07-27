@@ -1,23 +1,22 @@
-import sys
+from .window_ui import MainWindowUI
 
-from PyQt6.QtWidgets import QMainWindow, QWidget, QGridLayout, QPushButton, QLineEdit
-
+from PyQt6.QtWidgets import QMainWindow
+from PyQt6.QtGui import QIcon
 
 class MainWindow(QMainWindow):
-
-	"""
-	Класс создания окна
+	"""Класс создания окна
     ToDo:
-        * Ограничить минимальный размер окна до [~300px X ~600px]
-        * Разработать адптивный дизайн: При растягивании окна по Y > ~900px, справа появится журнал истории операций
-        * Разработать дизайн окна, стилизованное под windows 11
-    """
+        * Разработать адптивный дизайн, стилизованный под windows 11 (возможно с полупрозрачным фоном)"""
 
 	def __init__(self):
-
 		super().__init__()
-		self.setWindowsTitle("Ёк макарёк!")
+		ui = MainWindowUI()
+		ui.setup_ui(self)
 
-	def setup_ui(self, main_window):
-		main_window.
-		
+		# Изменение в заголовке окна
+		self.setWindowTitle('Get crypto prices')
+		self.setWindowIcon(QIcon("program/view/media/currency_bitcoin_64dp_F3F3F3.png"))
+
+		# Изменение размера и положения окна
+		self.resize(900, 600)
+		self.setMinimumSize(600, 300)

@@ -1,5 +1,3 @@
-# Программа, которая выводит курс криптовалют
-
 import requests
 
 class GetCryptoPrices:
@@ -16,6 +14,8 @@ class GetCryptoPrices:
         self.pricelist = {}
 
     def fetch_prices(self):
+        # Получает данные от coingeco api, и отдаёт их в self.pricelist
+
         params = {
             'ids': ','.join(self.ids),
             'vs_currencies': ','.join(self.currencies)
@@ -45,17 +45,20 @@ class GetCryptoPrices:
             return False
 
     def normalize_value(self):
+        # Получает список self.pricelist, изменяет вид записи цен, и обратно перезаписывает в self.pricelist.
         # Добавляет точки, разделяющие цену на разряды. 
         # Заменяет точку, разделяющую дробную часть цены от целой, на запятую.
         # Пример: 1000000.00 -> 100.000,00
 
-        unnormalize_pricelist = [] # Список с нессортированными ценами. Пример: [117384, 9162554, 2944.27, 229820, 0.302358, 23.6]
+        # Список с неотсортированными ценами. Пример: [117384, 9162554, 2944.27, 229820, 0.302358, 23.6]
+        unnormalize_pricelist = [] 
 
         # Перебираем значения self.pricelist и добавляем их в unnormalize_pricelist
         for i in self.pricelist:
             unnormalize_pricelist.append(self.pricelist[i])
 
-        normalize_pricelist = [] # Список с сортированными ценами. Пример: ['117.384', '9.162.554', '2.944,27', '229.820', '0,302358', '23,6']
+        # Список с сортированными ценами. Пример: ['117.384', '9.162.554', '2.944,27', '229.820', '0,302358', '23,6']
+        normalize_pricelist = [] 
 
         # Цикл перебора списка unnormalize_pricelist
         for item in unnormalize_pricelist:
@@ -63,27 +66,27 @@ class GetCryptoPrices:
             buffer = list()
             normalized_price = ""
         
-            #Замена ".", разделяющую дробную чать от целой, на ","
+            # Замена ".", разделяющую дробную чать от целой, на ","
             price = price.replace(".", ",")
 
-            #Разделение цены на целую часть, и часть после запятой
+            # Разделение цены на целую часть, и часть после запятой
             split_price = price.split(",") 
 
-            #Целая часть
+            # Целая часть
             integer_part = str(split_price[0])
 
-            #Дробная часть
+            # Дробная часть
             if len(split_price) == 2:
                 float_part = str(split_price[1])
 
             else:
                 float_part = None
 
-            #Разбиение целой части на элементы списка. Пример: 2450 -> ['2', '4', '5', '0']
+            # Разбиение целой части на элементы списка. Пример: 2450 -> ['2', '4', '5', '0']
             for char in integer_part:
                 buffer.append(char)
                 
-            #Разделение на разряды в целой части цены
+            # Разделение на разряды в целой части цены
             buffer.reverse()
             result = list() 
             k=0
@@ -98,7 +101,8 @@ class GetCryptoPrices:
 
             result.reverse()
 
-            #Присоединение списка целой части, и дробной части (если есть), к normalized_price. Пример: ['2', '.', '4', '5', '0'] -> 2.450
+            # Присоединение списка целой части, и дробной части (если есть), к normalized_price. 
+            # Пример: ['2', '.', '4', '5', '0'] -> 2.450
             normalized_price = "".join(result)
             if float_part:
                 normalized_price += ","
@@ -106,9 +110,8 @@ class GetCryptoPrices:
 
             normalize_pricelist.append(normalized_price)
 
-
+        # Цикл перебора списка отсортированных цен - normalize_pricelist, и изменение значений self.pricelis.
         for i in range(len(normalize_pricelist)):
-            
             key = list(self.pricelist.keys())[i]
             self.pricelist[key] = normalize_pricelist[i]
 

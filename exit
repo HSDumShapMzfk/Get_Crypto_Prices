@@ -1,0 +1,29 @@
+[33mcommit f18a5b2bfed7924e3cdd688a1688dd9656c3765d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Alexandr <infoforyouretate@gmail.com>
+Date:   Sun Jul 13 07:16:29 2025 +0500
+
+    Added class for getting cryptocurrency prices (v.1). Added class for creating a window (v.0.1).
+
+[33mcommit d97d26531fa358fdef9dfbb94d98c7558b181368[m
+Author: Alexandr <infoforyouretate@gmail.com>
+Date:   Wed Jul 2 19:56:09 2025 +0500
+
+    Added function for accepting prices from API. 2 part
+
+[33mcommit 8af9bf969426f4b6cbf86dfea3461fb369b99e11[m
+Author: Alexandr <infoforyouretate@gmail.com>
+Date:   Wed Jul 2 18:33:11 2025 +0500
+
+    Added function for accepting prices from API
+
+[33mcommit 2dd9567d2f083e658adaf38bcdc955e5d329c9fb[m
+Author: Alexandr <infoforyouretate@gmail.com>
+Date:   Wed Jul 2 17:46:41 2025 +0500
+
+    Frist version of my project
+
+[33mcommit 3a1d595e7c08698a6af6fb8b0477997dcadb66af[m
+Author: *** HSDivial <91687513+HSDumShapMzfk@users.noreply.github.com>
+Date:   Wed Jul 2 17:33:43 2025 +0500
+
+    Initial commit
