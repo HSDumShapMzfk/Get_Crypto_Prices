@@ -1,0 +1,4 @@
+read_before_commit.txt
+.env
+__pycache__/
+ignore/
