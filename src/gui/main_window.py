@@ -15,7 +15,7 @@ class MainWindow(QMainWindow):
 
 		# Изменение в заголовке окна
 		self.setWindowTitle('Get crypto prices')
-		self.setWindowIcon(QIcon("media/currency_bitcoin_64dp_F3F3F3_2.png"))
+		self.setWindowIcon(QIcon("media/gui_icons/currency_bitcoin_64dp_F3F3F3.png"))
 
 		# Изменение размера и положения окна
 		self.resize(900, 600)

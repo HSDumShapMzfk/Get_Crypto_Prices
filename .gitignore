@@ -1,4 +1,10 @@
-read_before_commit.txt
-.env
+# Python
 __pycache__/
+.venv/
+.env
+
+# Tests
+tests/
+
+# Misc
 ignore/

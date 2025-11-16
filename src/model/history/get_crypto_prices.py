@@ -1,12 +1,11 @@
 import requests
 import json
 import os
-from decimal import Decimal
 from pathlib import Path
 from datetime import datetime, timedelta
 
 class GetCryptoPrices:
-    # Делает запрос к API, получает словарь с актуальнымы курсами криптровалют, отдает его в виде словаря.
+    """ Управление запросами к Coingecko и ExchangeRate, форматирование цен """
 
     def __init__(self):
         self.current_dir = Path(__file__).resolve().parent
@@ -70,7 +69,8 @@ class GetCryptoPrices:
         print('\tAPI dataset update successful\n')
 
     def fetch_coingecko(self):
-        # Запрос к Coingecko API, сохранение полученных данных в переменную pricelist и файл ticker_symbols.json
+        """ Запрос к Coingecko API 
+            сохранение полученных данных в переменную pricelist и файл ticker_symbols.json """
         url = 'https://api.coingecko.com/api/v3/coins/markets'
         params = {
         "vs_currency": "usd",
@@ -106,8 +106,10 @@ class GetCryptoPrices:
         return True
 
     def fetch_exchangerate(self):
-        # Запрос к Exchange Rate API, сохранение полученных данных в переменную iso_currencies и файл currencies.json
-        url = f'https://v6.exchangerate-api.com/v6/{os.getenv('API_KEY')}/latest/USD'
+        """ Запрос к Exchange Rate API 
+            сохранение полученных данных в переменную iso_currencies и файл currencies.json """
+        EXCHANGE_RATE_API_KEY = os.getenv('EXCHANGE_RATE_API_KEY')
+        url = f'https://v6.exchangerate-api.com/v6/{EXCHANGE_RATE_API_KEY}/latest/USD'
 
         response = requests.get(url)
         if response.status_code == 200:
@@ -135,8 +137,7 @@ class GetCryptoPrices:
             return False
 
     def normalize_value(self):
-
-        unnormalize_pricelist = [] 
+        unnormalize_pricelist = []
 
         for i in self.pricelist:
             unnormalize_pricelist.append(self.pricelist[i]['selected_currency'])
@@ -232,6 +233,7 @@ class GetCryptoPrices:
             key = list(self.pricelist.keys())[i]
             self.pricelist[key]['selected_currency'] = normalize_pricelist[i]
 
+    # ----------------- Смена валюты -----------------
     def change_currency(self, currency):
         rate = self.iso_currencies[currency.upper()]
 
@@ -240,13 +242,14 @@ class GetCryptoPrices:
 
         self.normalize_value()
 
+    # ----------------- Основной рабочий процесс -----------------
     def get_crypto_prices(self):
         self.show_time_last_update_dataset(firs_line=True)
 
-        if self.check_last_api_update('coingecko_api', 1):
+        if self.check_last_api_update('coingecko_api', timedelta_hours=1):
             if self.fetch_coingecko():
                 print('\nData from Coingecko API successfully received')
-        if self.check_last_api_update('exchangerate_api', 6):
+        if self.check_last_api_update('exchangerate_api', timedelta_hours=6):
             if self.fetch_exchangerate():
                 print('\nData from Exchange Rate API successfully received')
 
