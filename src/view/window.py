@@ -1,7 +1,12 @@
 from PyQt6.QtWidgets import QMainWindow
 from PyQt6.QtGui import QIcon
+import logging
 
-from .window_ui import MainWindowUI
+from src.view.ui import MainWindowUI
+from src.model.cache import state_instance
+
+logger = logging.getLogger(__name__)
+
 
 class MainWindow(QMainWindow):
 	"""Класс создания окна
@@ -10,8 +15,8 @@ class MainWindow(QMainWindow):
 
 	def __init__(self):
 		super().__init__()
-		ui = MainWindowUI()
-		ui.setup_ui(self)
+		self.ui = MainWindowUI()
+		self.ui.setup_ui(self)
 
 		# Изменение в заголовке окна
 		self.setWindowTitle('Get crypto prices')
@@ -20,3 +25,8 @@ class MainWindow(QMainWindow):
 		# Изменение размера и положения окна
 		self.resize(900, 600)
 		self.setMinimumSize(600, 400)
+
+	def closeEvent(self, event):
+		state_instance.write_state()
+		logger.info(f"lsc: {state_instance.last_selected_currency} is saved!")
+		event.accept()
