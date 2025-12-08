@@ -1,26 +1,20 @@
 import asyncio
 import sys
+import logging
 from PyQt6.QtWidgets import QApplication
 from qasync import QEventLoop
-import logging
 
 from src.model.cache import JSONCacheHandler
 from src.model.api import CoingeckoHandler, ExchangerateHandler
 from src.model.base_model import BaseModel
 from src.view.window import MainWindow
 from src.controller.main_controller import MainController
-from src.config import (
-	COINGECKO_CACHE_FILE_NAME,
-	COINGECKO_TIME_TO_LIVE,
-	EXCHANGERATE_CACHE_FILE_NAME,
-	EXCHANGERATE_TIME_TO_LIVE
-	)
+from src.loader import loader_instance as load
 
 # Initializing logging
 logging.basicConfig(
     level=logging.DEBUG,
-    format="%(asctime)s - %(levelname)s - %(message)s"
-)
+    format="%(asctime)s - %(levelname)s - %(message)s")
 logger = logging.getLogger(__name__)
 
 
@@ -39,13 +33,17 @@ async def main():
 
 	# Getting data from the Coingecko API
 	logger.info("Initialize Coingecko API handler...")
-	coingecko_cache_handler = JSONCacheHandler(COINGECKO_CACHE_FILE_NAME, COINGECKO_TIME_TO_LIVE)
+	coingecko_cache_handler = JSONCacheHandler(
+		load.config["cache"].get("coingecko_cache_file_name"), 
+		load.config["cache"].get("coingecko_time_to_live"))
 	coingecko_api_handler = CoingeckoHandler(coingecko_cache_handler)
 	logger.info('Coingecko API handler initialized')
 
 	# Getting data from the Exchangerate API
 	logger.info("Initialize Exchangerate API handler...")
-	exchangerate_cache_handler = JSONCacheHandler(EXCHANGERATE_CACHE_FILE_NAME, EXCHANGERATE_TIME_TO_LIVE)
+	exchangerate_cache_handler = JSONCacheHandler(
+		load.config["cache"].get("exchangerate_cache_file_name"),
+		load.config["cache"].get("exchangerate_time_to_live"))
 	exchangerate_api_handler = ExchangerateHandler(exchangerate_cache_handler)
 	logger.info('Exchangerate API handler initialized')
 

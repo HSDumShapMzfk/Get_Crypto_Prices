@@ -1,0 +1,35 @@
+{
+    "api": {
+        "coingecko_url": "https://api.coingecko.com/api/v3/coins/markets",
+        "coingecko_params": {"vs_currency": "usd", "per_page": "200"},
+        "coingecko_data_template": [
+            "id",
+            "symbol",
+            "name",
+            "image",
+            "current_price",
+            "market_cap",
+            "market_cap_rank",
+            "fully_diluted_valuation",
+            "total_volume",
+            "high_24h",
+            "low_24h",
+            "price_change_24h",
+            "price_change_percentage_24h",
+            "market_cap_change_24h",
+            "market_cap_change_percentage_24h"
+        ],
+        "exchangerate_url": ["https://v6.exchangerate-api.com/v6/", "/latest/USD"],
+        "exchangerate_params": null,
+        "exchangerate_data_template": "conversion_rates",
+        "response_timeout": [5, 15]
+    },
+    "cache":{
+        "datetime_format": "%Y-%m-%d %H:%M:%S",
+        "coingecko_cache_file_name": "coingecko",
+        "coingecko_time_to_live": 60,
+        "exchangerate_cache_file_name": "exchangerate",
+        "exchangerate_time_to_live": 10000,
+        "forced_update": 1
+    }
+}

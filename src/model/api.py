@@ -4,24 +4,11 @@ import asyncio
 import aiohttp
 import qasync
 import logging
+from typing import Optional, Union
+from pathlib import Path
 
 from src.model.cache import JSONCacheHandler
-from src.config import (
-	COINGECKO_URL, 
-	COINGECKO_PARAMS, 
-	COINGECKO_CACHE_FILE_NAME, 
-	COINGECKO_TIME_TO_LIVE,
-	COINGECKO_DATA_TEMPLATE,
-	EXCHANGERATE_KEY, 
-	EXCHANGERATE_URL, 
-	EXCHANGERATE_PARAMS,
-	EXCHANGERATE_CACHE_FILE_NAME,
-	EXCHANGERATE_TIME_TO_LIVE,
-	EXCHANGERATE_DATA_TEMPLATE,
-	RESPONSE_TIMEOUT, 
-	LOGO_DIR,
-	LOGOS_EXTENSION,
-	)
+from src.loader import loader_instance as load
 
 logger = logging.getLogger(__name__)
 
@@ -29,10 +16,24 @@ logger = logging.getLogger(__name__)
 class APIHandler(ABC):
 	""" An abstract class - API request handler """
 		
-	def __init__(self, cache: JSONCacheHandler) -> None:
+	def __init__(
+		self, 
+		cache: JSONCacheHandler,
+		url: str,
+		params: dict[str, str],
+		template: Optional[Union[str, list[str]]]
+	):
 		self.cache = cache
+		self.url = url
+		self.params = params
+		self.template = template
 
-	def make_response(self, url: str, params: dict[str, str], timeout : tuple[int, int]) -> list | dict:
+	def make_response(
+		self, 
+		url: str, 
+		params: dict[str, str], 
+		timeout : tuple[int, int]
+	) -> list | dict:
 		""" Creating a request to receive data from the API
 			Returns raw data """
 		try:
@@ -57,12 +58,13 @@ class APIHandler(ABC):
 		""" Choose between getting data from the cache or creating a new request """
 		if self.cache.is_file_exist() and self.cache.is_time_to_live():
 			# Getting cached data
-			logger.info('Retrieving saved data from the cache')
 			return self.cache.read_cahce()
 			
 		# Getting new data from the request
-		logger.info('Getting new data from the API')
-		response = self.make_response(self.url, self.params, RESPONSE_TIMEOUT)
+		response = self.make_response(
+			self.url, 
+			self.params, 
+			tuple(load.config["api"].get("response_timeout")))
 		data = self.processing(response, self.template)
 		self.cache.write_cache(data)
 		return data
@@ -70,12 +72,18 @@ class APIHandler(ABC):
 
 class CoingeckoHandler(APIHandler):
 	""" Class - coingecko api handler """
-	url = COINGECKO_URL
-	params = COINGECKO_PARAMS
-	template = COINGECKO_DATA_TEMPLATE
+	url = load.config["api"].get("coingecko_url")
+	params = load.config["api"].get("coingecko_params")
+	template = load.config["api"].get("coingecko_data_template")
 
-	def __init__(self, cache: JSONCacheHandler) -> None:
-		super().__init__(cache)
+	def __init__(
+		self, 
+		cache: JSONCacheHandler,
+		# url: str,
+		# params: dict[str, str],
+		# template: Optional[Union[str, list[str]]]
+	):
+		super().__init__(cache, self.url, self.params, self.template)
 
 	def processing(self, data: list[dict], template: list[str]) -> list[dict]:
 		""" Processing of received data """
@@ -88,12 +96,21 @@ class CoingeckoHandler(APIHandler):
 
 class ExchangerateHandler(APIHandler):
 	""" Class - exchangerate api handler """
-	url = EXCHANGERATE_URL
-	params = EXCHANGERATE_PARAMS
-	template = EXCHANGERATE_DATA_TEMPLATE
 
-	def __init__(self, cache: JSONCacheHandler) -> None:
-		super().__init__(cache)
+	# Inserting an API key into a URL
+	url_parts = load.config["api"].get("exchangerate_url")
+	url = "".join([url_parts[0], load.env.get("EXCHANGERATE_KEY"), url_parts[1]])
+	params = load.config["api"].get("exchangerate_params")
+	template = load.config["api"].get("exchangerate_data_template")
+
+	def __init__(
+		self, 
+		cache: JSONCacheHandler,
+		# url: str,
+		# params: dict[str, str],
+		# template: Optional[Union[str, list[str]]]
+	):
+		super().__init__(cache, self.url, self.params, self.template)
 		
 	def processing(self, data: dict[dict], template: str) -> dict:
 		""" Processing of received data 
@@ -106,11 +123,13 @@ class ExchangerateHandler(APIHandler):
 
 
 class ImageManager:
+	""" """
+	LOGO_DIR = Path().cwd().joinpath("media\\crypto_images")
 
 	def __init__(self):
 		# Checking the existence of the images folder
-		if not LOGO_DIR.exists():
-			LOGO_DIR.mkdir()
+		if not self.LOGO_DIR.exists():
+			self.LOGO_DIR.mkdir()
 
 	def forming_tasks(self, item: list):
 		# tasks = [

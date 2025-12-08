@@ -1,8 +1,8 @@
 # from src.api.api_client import fetch_image
 import logging
 
-from src.model.cache import state_instance
 from src.model.api import CoingeckoHandler, ExchangerateHandler
+from src.loader import loader_instance as load
 
 logger = logging.getLogger(__name__)
 
@@ -12,13 +12,13 @@ class BaseModel:
 	def __init__(self, 
 			coingecko_api_handler: CoingeckoHandler, 
 			exchangerate_api_handler: ExchangerateHandler
-		) -> None:
+	) -> None:
 		self.coingecko_api_handler = coingecko_api_handler
 		self.coingecko_data = self.coingecko_api_handler.fetch()
 		self.exchangerate_api_handler = exchangerate_api_handler
 		self.exchangerate_data = self.exchangerate_api_handler.fetch()
 
-		self.current_currency = state_instance.last_selected_currency
+		self.current_currency = load.state.get("last_selected_currency")
 		self.dataset = self.generate_dataset(self.current_currency)
 
 	def _price_formatting(self, price: int | float, currency: str) -> str:
@@ -48,7 +48,7 @@ class BaseModel:
 				"high_24h" : str(item["high_24h"]),
 				"low_24h" : str(item["low_24h"]),
 				"price_change_percentage_24h" : str(item["price_change_percentage_24h"])
-			}
+		}
 		return new_item
 
 	def generate_dataset(self, currency: str = 'USD') -> list[dict]:
@@ -61,7 +61,7 @@ class BaseModel:
 	def change_currency(self, currency: str) -> None:
 		""" Generates a dataset for the selected currency """
 		self.current_currency = currency
-		state_instance.last_selected_currency = currency
+		load.state["last_selected_currency"] = currency
 		self.dataset = self.generate_dataset(self.current_currency)
 
 	def update_data(self) -> None:
