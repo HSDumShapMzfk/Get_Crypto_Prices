@@ -26,9 +26,9 @@
     },
     "cache":{
         "datetime_format": "%Y-%m-%d %H:%M:%S",
-        "coingecko_cache_file_name": "coingecko",
+        "coingecko_cache_file_name": "coingecko.json",
         "coingecko_time_to_live": 60,
-        "exchangerate_cache_file_name": "exchangerate",
+        "exchangerate_cache_file_name": "exchangerate.json",
         "exchangerate_time_to_live": 10000,
         "forced_update": 1
     }
